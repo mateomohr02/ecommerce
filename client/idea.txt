@@ -1,0 +1,12 @@
+admin
+admin login: add delete edit db
+
+home:
+user login:
+shopping basket
+product catalog
+filters sorter
+searchbar
+
+
+detail product:
