@@ -9,6 +9,17 @@ async function getAllProducts(){
       }
 }
 
+async function getAllCategories(){
+  try {
+    const products = await getAllProducts()
+    const categories = products.map(p => p.category)
+    return categories
+  } catch (error) {
+    throw new Error('Error al obtener los productos')
+  }
+}
+
+
 module.exports = {
     getAllProducts,
 }

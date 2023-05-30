@@ -1,8 +1,10 @@
-const { Router } = require("express");
+const { Router, request } = require("express");
 const { User, Product } = require("../db.js");
 const axios = require("axios");
 const { where } = require("sequelize");
 const { getAllProducts } = require("./controllers/controllers.js");
+//const adminValidation = require("./middlewares/adminValidation.js")
+
 // Importar todos los routers;
 // Ejemplo: const authRouter = require('./auth.js');
 
@@ -10,11 +12,7 @@ const router = Router();
 
 //RUTAS USER CLIENT
 
-router.get("/", (req, res) => {
-  res.status(200).json("¡Se viene ecommerce!");
-});
-
-router.get("/home", async (req, res) => {
+router.get("/products", async (req, res) => {
   try {
     const products = await getAllProducts();
     res.json(products);
@@ -22,6 +20,48 @@ router.get("/home", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+router.get("/products/:name", async (req, res) => {
+  try {
+    const { name } = req.params;
+    const products = await getAllProducts();
+
+    // Filtrar los productos por el nombre
+    const filteredProducts = products.filter( p => p.productName.toLowerCase().includes(name.toLowerCase()));
+
+    if (filteredProducts) res.status(200).json(filteredProducts)    
+
+  } catch (error) {
+    res.status(500).json({ message: "Error al realizar la búsqueda" });
+  }
+});
+
+
+router.get("/category/:category", async (req, res) => {
+  try {
+    const { category } = req.params
+    const products = await getAllProducts()
+    const filteredProducts = products.filter(p => p.category === category)
+
+    if (filteredProducts) res.status(200).json(filteredProducts)
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+})
+
+
+router.get("/product/:id", async (req, res) => {
+  try {
+    const { id } = req.params
+    const products = getAllProducts()
+    const product = products.filter(p => p.id === id)
+    if (product) {
+      res.status(200).json(product)
+    }
+  } catch (error) {
+      res.status(400).json({error:error.message})
+  }
+})
 
 router.post("/register", async (req, res) => {
   try {
@@ -40,9 +80,33 @@ router.post("/register", async (req, res) => {
   }
 });
 
+
+
 //RUTAS ADMIN
 
-router.post("/product", async (req, res) => {
+router.get("/admin/products", async (req, res) => {
+  try {
+    const products = await getAllProducts();
+    res.status(200).json(products)
+  } catch (error) {
+    res.status(400).json({message: error.message})
+  }
+})
+
+router.get("/admin/product/:id", async (req, res) => {
+  try {
+    const { id } = req.params
+    const products = getAllProducts()
+    const product = products.filter(p => p.id === id)
+    if (product) {
+      res.status(200).json(product)
+    }
+  } catch (error) {
+      res.status(400).json({error:error.message})
+  }
+})
+
+router.post("/admin/product",(req, res) => {
   try {
     const {
       productName,
