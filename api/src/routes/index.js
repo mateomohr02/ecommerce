@@ -22,18 +22,21 @@ router.get("/products", async (req, res) => {
 });
 
 router.get("/products/:name", async (req, res) => {
+  
   try {
     const { name } = req.params;
+    
     const products = await getAllProducts();
-
+    
     // Filtrar los productos por el nombre
-    const filteredProducts = products.filter( p => p.productName.toLowerCase().includes(name.toLowerCase()));
+    const filteredProducts = products?.filter( p => p.productName.toLowerCase().includes(name.toLowerCase()));
 
     if (filteredProducts) res.status(200).json(filteredProducts)    
 
   } catch (error) {
-    res.status(500).json({ message: "Error al realizar la búsqueda" });
+    res.status(400).json({ message: "Error al realizar la búsqueda" });
   }
+
 });
 
 
@@ -41,7 +44,7 @@ router.get("/category/:category", async (req, res) => {
   try {
     const { category } = req.params
     const products = await getAllProducts()
-    const filteredProducts = products.filter(p => p.category === category)
+    const filteredProducts = products?.filter(p => p.category === category)
 
     if (filteredProducts) res.status(200).json(filteredProducts)
   } catch (error) {
@@ -53,8 +56,8 @@ router.get("/category/:category", async (req, res) => {
 router.get("/product/:id", async (req, res) => {
   try {
     const { id } = req.params
-    const products = getAllProducts()
-    const product = products.filter(p => p.id === id)
+    const products = await getAllProducts()
+    const product = products?.filter(p => p.id === id)
     if (product) {
       res.status(200).json(product)
     }
@@ -96,8 +99,8 @@ router.get("/admin/products", async (req, res) => {
 router.get("/admin/product/:id", async (req, res) => {
   try {
     const { id } = req.params
-    const products = getAllProducts()
-    const product = products.filter(p => p.id === id)
+    const products = await getAllProducts()
+    const product = products?.filter(p => p.id === id)
     if (product) {
       res.status(200).json(product)
     }
